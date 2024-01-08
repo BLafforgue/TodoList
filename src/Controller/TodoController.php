@@ -18,10 +18,19 @@ class TodoController extends AbstractController
     /**
      * @Route("/", name="app_todo_index", methods={"GET"})
      */
-    public function index(TodoRepository $todoRepository): Response
+    public function index(Request $request, TodoRepository $todoRepository): Response
     {
+        $orderby = $request->query->get('orderby') ?? "name";
+        $order = $request->query->get('order') ?? "ASC";
+        if ($order === "ASC") {
+            $order = "DESC";
+        }
+        else {
+            $order = "ASC";
+        }
         return $this->render('todo/index.html.twig', [
-            'todos' => $todoRepository->findAll(),
+            'todos' => $todoRepository->findAllOrdered($order, $orderby),
+            'order' => $order
         ]);
     }
 
@@ -51,6 +60,7 @@ class TodoController extends AbstractController
      */
     public function show(Todo $todo): Response
     {
+        dump($todo);
         return $this->render('todo/show.html.twig', [
             'todo' => $todo,
         ]);
