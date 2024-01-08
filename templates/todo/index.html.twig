@@ -7,13 +7,16 @@
 
     <table class="table">
         <thead>
-            <tr>
-                <th><a href="/todo/?orderby=id&order={{ order }}">Id</a></th>
-                <th><a href="/todo/?orderby=name&order={{ order }}">Nom</a></th>
-                <th>Description</th>
-                <th>Actions</th>
-                <th>Effectuer ?</th>
-            </tr>
+        {{ form_start(form) }}
+        {{ form_row(form.done) }}
+        <input type="submit" name="submit" value="Envoyer">
+        {{ form_end(form) }}
+        <tr>
+            <th><a href="/todo/?orderby=id&order={{ order }}">Id</a></th>
+            <th><a href="/todo/?orderby=name&order={{ order }}">Nom</a></th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for todo in todos %}
@@ -25,7 +28,6 @@
                     <a href="{{ path('app_todo_show', {'id': todo.id}) }}">show</a>
                     <a href="{{ path('app_todo_edit', {'id': todo.id}) }}">edit</a>
                 </td>
-                <td><input type="checkbox"></td>
             </tr>
         {% else %}
             <tr>

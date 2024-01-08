@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Todo;
+use App\Form\FilterTodoType;
 use App\Form\TodoType;
 use App\Repository\TodoRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,10 +17,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class TodoController extends AbstractController
 {
     /**
-     * @Route("/", name="app_todo_index", methods={"GET"})
+     * @Route("/", name="app_todo_index", methods={"GET", "POST"})
      */
     public function index(Request $request, TodoRepository $todoRepository): Response
     {
+        //Filtre à faire
+        $form = $this->createForm(FilterTodoType::class);
+        $form->handleRequest($request);
+        $doneCheckbox = 0;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $doneCheckbox = $data['done'];
+        }
+
+        //Tri Colonnes
         $orderby = $request->query->get('orderby') ?? "name";
         $order = $request->query->get('order') ?? "ASC";
         if ($order === "ASC") {
@@ -29,8 +40,9 @@ class TodoController extends AbstractController
             $order = "ASC";
         }
         return $this->render('todo/index.html.twig', [
-            'todos' => $todoRepository->findAllOrdered($order, $orderby),
-            'order' => $order
+            'todos' => $todoRepository->findAllOrdered($order, $orderby, $doneCheckbox),
+            'order' => $order,
+            'form' => $form->createView()
         ]);
     }
 

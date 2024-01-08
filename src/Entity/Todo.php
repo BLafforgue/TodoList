@@ -27,6 +27,11 @@ class Todo
      */
     private $description;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $done;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -52,6 +57,18 @@ class Todo
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function isDone(): ?bool
+    {
+        return $this->done;
+    }
+
+    public function setDone(bool $done): self
+    {
+        $this->done = $done;
 
         return $this;
     }
