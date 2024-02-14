@@ -47,13 +47,11 @@ class TodoRepository extends ServiceEntityRepository
                 ->orderBy('t.' .$order, $orderby)
                 ->getQuery()
                 ->getResult();
-
         } else {
             $qb = $this->createQueryBuilder('t')
                 ->orderBy('t.' .$order, $orderby)
                 ->getQuery()
                 ->getResult();
-
         }
         return $qb;
 

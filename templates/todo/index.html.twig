@@ -15,6 +15,7 @@
             <th><a href="/todo/?orderby=id&order={{ order }}">Id</a></th>
             <th><a href="/todo/?orderby=name&order={{ order }}">Nom</a></th>
             <th>Description</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -24,6 +25,7 @@
                 <td>{{ todo.id }}</td>
                 <td>{{ todo.name }}</td>
                 <td>{{ todo.description }}</td>
+                <td>{{ todo.done }}</td>
                 <td>
                     <a href="{{ path('app_todo_show', {'id': todo.id}) }}">show</a>
                     <a href="{{ path('app_todo_edit', {'id': todo.id}) }}">edit</a>
