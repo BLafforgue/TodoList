@@ -6,10 +6,13 @@ use App\Entity\Todo;
 use App\Form\FilterTodoType;
 use App\Form\TodoType;
 use App\Repository\TodoRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/todo")
@@ -35,8 +38,7 @@ class TodoController extends AbstractController
         $order = $request->query->get('order') ?? "ASC";
         if ($order === "ASC") {
             $order = "DESC";
-        }
-        else {
+        } else {
             $order = "ASC";
         }
         return $this->render('todo/index.html.twig', [
@@ -44,6 +46,20 @@ class TodoController extends AbstractController
             'order' => $order,
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/search", name="app_todo_search", methods={"POST"})
+     */
+    public function search(Request $request, TodoRepository $todoRepository, SerializerInterface $serializer): Response
+    {
+        $payload = json_decode($request->getContent(), true);
+        $todos = $todoRepository->findTodoByName($payload['terms']);
+        $jsonContent = $serializer->serialize($todos, 'json');
+        return new Response($jsonContent);
+//        $search = $request->request->get('terms');
+//        $todos = $todoRepository->findTodoByName($search);
+//        return $this->json($todos);
     }
 
     /**
@@ -99,11 +115,22 @@ class TodoController extends AbstractController
     }
 
     /**
+     * @Route("/update/{id}", name="app_todo_update", methods={"GET"})
+     */
+    public function update(Request $request, Todo $todo, TodoRepository $todoRepository, EntityManagerInterface $em): Response
+    {
+        $todo->setDone(!$todo->isDone());
+        $em->persist($todo);
+        $em->flush();
+        return $this->json(['id' => $todo->getId(), 'newValue' => $todo->isDone()]);
+    }
+
+    /**
      * @Route("/{id}", name="app_todo_delete", methods={"POST"})
      */
     public function delete(Request $request, Todo $todo, TodoRepository $todoRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$todo->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $todo->getId(), $request->request->get('_token'))) {
             $todoRepository->remove($todo, true);
         }
 

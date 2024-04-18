@@ -8,8 +8,9 @@
     <table class="table">
         <thead>
         {{ form_start(form) }}
+        <label for="search">Rechercher : </label><input type="search" id="search" name="search">
         {{ form_row(form.done) }}
-        <input type="submit" name="submit" value="Envoyer">
+        <input type="submit" name="button" value="Envoyer">
         {{ form_end(form) }}
         <tr>
             <th><a href="/todo/?orderby=id&order={{ order }}">Id</a></th>
@@ -21,11 +22,17 @@
         </thead>
         <tbody>
         {% for todo in todos %}
-            <tr>
-                <td>{{ todo.id }}</td>
+            <tr id="line">
+                <td id="id">{{ todo.id }}</td>
                 <td>{{ todo.name }}</td>
                 <td>{{ todo.description }}</td>
-                <td>{{ todo.done }}</td>
+                <td id="done">
+                    {% if todo.done == 1 %}
+                        Fait
+                    {% else %}
+                        A faire
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('app_todo_show', {'id': todo.id}) }}">show</a>
                     <a href="{{ path('app_todo_edit', {'id': todo.id}) }}">edit</a>
